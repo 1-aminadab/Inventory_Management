@@ -1,7 +1,7 @@
 const router = require("express").Router()
 const db = require("../db")
 
-
+// Cruds for users
 router.get('/all_users',async(req, res)=>{
     db.query('SELECT * FROM users',(error, results, fields)=>{
         if(error) throw error;
@@ -19,6 +19,7 @@ router.get('/all_users',async(req, res)=>{
 } )
 
 router.post('/add_new_user',async(req, res)=>{
+    
     db.query('INSERT INTO users SET ?', req.body,(error, results, fields)=>{
         if(error) throw error;
         console.log('result :', results)

@@ -10,6 +10,8 @@ var mysql = require("mysql")
 var indexRouter = require('./routes/index');
 var userRouter = require("./routes/userRoute")
 var itemRouter = require("./routes/itemRoute")
+var orderRouter = require("./routes/orderRoute")
+var uidRouter = require("./routes/uidRoute")
 
 var app = express();
 
@@ -28,7 +30,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/user', userRouter)
 app.use('/item', itemRouter)
-
+app.use('/order', orderRouter)
+app.use('/rfid', uidRouter)
 
 
 // catch 404 and forward to error handler
@@ -37,18 +40,7 @@ app.use(function(req, res, next) {
 });
 
 const port  = process.env.PORT || 5000
-// MYSQL conneciton 
-
-const pool = mysql.createPool({
-  connectionLimit : 10,
-  host:'localhost',
-  user: 'root',
-  password:'password',
-  database:'inventoryDatabase'
-})
-
-
-
+ 1
 // listen on port
 app.listen(port,()=>console.log(`Listen on port  ${port}`))
 // error handler
@@ -62,18 +54,7 @@ app.use(function(err, req, res, next) {
 });
 
 
-app.get('http://localhost:5000/addUsers',async(req, res)=>{
-  
-  const newUser = {firstName:"Amanuel",lastName:'Tadesse', password:"12345678" }
-  await pool.query("INSERT INTO user set ?",[newUser])
-  res.redirect('/user')
-})
 
-app.get("user", async(req, res)=>{
-  res.send("there is something insomnia")
-  const [rows] = await pool.query("SELECT * FROM user");
-  res.render('user',{user: rows})
-})
 
 
 module.exports = app;
