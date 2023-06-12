@@ -7,6 +7,7 @@ router.post('/uid_file', async(req, res)=>{
     const itemID = req.body.uid
     
     db.query("SELECT * FROM items WHERE itemID = ?",itemID,(error, result, fields)=>{
+        if(error) throw error;
         const itemData = result[0]
         
         if(result.length === 0){
