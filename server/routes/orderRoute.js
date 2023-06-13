@@ -19,7 +19,7 @@ router.post('/send_request', async(req, res)=>{
 router.patch('/send_approval', async(req, res)=>{
     const orderID = req.body.id
     const approved = {approved:true}
-
+    
     db.query("UPDATE orders SET ? WHERE orderID = ?", [approved, orderID],(error, result, fields)=>{
         if(error) throw error;
         console.log("Approved Succesfully");

@@ -1,6 +1,6 @@
 const router = require("express").Router()
 const db = require("../db")
-
+const bcrypt = require('bcrypt')
 // Cruds for users
 router.get('/all_users',async(req, res)=>{
     db.query('SELECT * FROM users',(error, results, fields)=>{
@@ -19,20 +19,32 @@ router.get('/all_users',async(req, res)=>{
 } )
 
 router.post('/add_new_user',async(req, res)=>{
+    const saltRounds = 10
+    const oldPassword = `${req.body.fullName}`
+    let newPassword = null
+    bcrypt.genSalt(saltRounds, function(err, salt) {
+        bcrypt.hash(oldPassword.toUpperCase(), salt, function(err, hash) {
+           newPassword = hash
+           
+        });
+    });
     
-    db.query('INSERT INTO users SET ?', req.body,(error, results, fields)=>{
-        if(error) throw error;
-        console.log('result :', results)
-        console.log('fields: ', fields);
-        console.log('NEW RECORD ADDED TO ATHE TABLE WITH: ');
-    })
-    db.end((error)=>{
-        if(error){
-            console.log("Error closing MYsql connection : "+error.stack);
-            return 
-        }
-        console.log('Closed MySQL connection')
-    })
+    const userData = {...req.body, password:oldPassword}
+    console.log(newPassword);
+    // console.log(userData)
+    // db.query('INSERT INTO users SET ?', userData,(error, results, fields)=>{
+    //     if(error) throw error;
+    //     console.log('result :', results)
+    //     console.log('fields: ', fields);
+    //     console.log('NEW RECORD ADDED TO ATHE TABLE WITH: ');
+    // })
+    // db.end((error)=>{
+    //     if(error){
+    //         console.log("Error closing MYsql connection : "+error.stack);
+    //         return 
+    //     }
+    //     console.log('Closed MySQL connection')
+    // })
 })
 
 router.patch('/update_user', async(req, res)=>{

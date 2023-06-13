@@ -2,10 +2,28 @@ const router = require("express").Router()
 const db  = require("../db")
 
 
+router.get('/check_socket', async(req, res)=>{
+    console.log(req.body.content);
+    try {
+        res.status(200).json("success")
+    } catch (error) {
+        res.status(400).json("unsuccess")
+    }
+
+    // req.io.on('connection', (socket) => {
+    //     console.log('A user connected');
+    //     socket.on('chat message', (msg) => {
+    //       console.log(`Received message: ${msg}`);
+    //       req.io.emit('chat message', msg);
+    //     });
+    //   });
+
+})
+
 router.post('/uid_file', async(req, res)=>{
     const uidFile = req.body
     const itemID = req.body.uid
-    
+
     db.query("SELECT * FROM items WHERE itemID = ?",itemID,(error, result, fields)=>{
         if(error) throw error;
         const itemData = result[0]
