@@ -1,6 +1,12 @@
+:root{
+  --primary-color:blue;
+  --secodary-color:rgba(7, 7, 252, 0.61);
+}
 .App {
+  box-sizing: border-box;
   text-align: center;
   color: black;
+  overflow: hidden;
 }
 
 

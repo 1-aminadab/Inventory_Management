@@ -1,0 +1,43 @@
+/* App.css */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .employee-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 500px;
+  }
+  
+  .employee-list li {
+    display: flex;
+    flex-direction: row; /* Change flex direction to display checkboxes on the left */
+    align-items: center;
+    gap: 20px;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+    color: #1E3A8A;
+  }
+  
+  .employee-list li.selected {
+    background-color: #1E3A8A;
+    color: #fff;
+  }
+  
+  .employee-list li input[type="checkbox"] {
+    margin-right: 10px;
+    width: 30px; /* Increase checkbox size */
+    height: 30px; /* Increase checkbox size */
+    color: #1E3A8A;
+  }
+  
+  .employee-list li span {
+    flex: 1;
+    text-align: center;
+  }
