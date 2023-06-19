@@ -58,6 +58,7 @@ console.log(items);
           <option value='name'>By Name</option>
           <option value='id'>By ID</option>
         </select>
+        {/* <a  onClick={navigate('/add_item')}  style={{color:"blue"}}>Add New</a> */}
       </div>
       <table>
         <thead>

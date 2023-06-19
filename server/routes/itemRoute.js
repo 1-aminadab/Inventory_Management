@@ -67,13 +67,13 @@ router.post('/register',async(req, res)=>{
         console.log('fields: ', fields);
         console.log('NEW RECORD ADDED TO ATHE TABLE WITH: ');
     })
-    db.end((error)=>{
-        if(error){
-            console.log("Error closing MYsql connection : "+error.stack);
-            return 
-        }
-        console.log('Closed MySQL connection')
-    })
+    // db.end((error)=>{
+    //     if(error){
+    //         console.log("Error closing MYsql connection : "+error.stack);
+    //         return 
+    //     }
+    //     console.log('Closed MySQL connection')
+    // })
 })
 
 router.post('/update_item', async(req, res)=>{
@@ -83,13 +83,13 @@ router.post('/update_item', async(req, res)=>{
         if(error) throw error;
         console.log('Row updated: ', results);
     })
-    db.end((error)=>{
-        if(error){
-            console.error('Error closing MYSQL connection: ' + error.stack);
-            return;
-        }
-        console.log('Closed MySQL connetion'); 
-    })
+    // db.end((error)=>{
+    //     if(error){
+    //         console.error('Error closing MYSQL connection: ' + error.stack);
+    //         return;
+    //     }
+    //     console.log('Closed MySQL connetion'); 
+    // })
 })
 
 router.delete('/delete_item/:id',(req, res)=>{

@@ -1,4 +1,5 @@
 import './App.css';
+import { AuthContextProvider } from './context/AuthContext';
 // packages
 import {Routes, Route} from 'react-router-dom'
 
@@ -31,6 +32,7 @@ import TransfereHistory from './user/transer_history/TransfereHistory';
 import SocketTest from './socket.io/SocketTest'
 function App() {
   return (
+    <AuthContextProvider>
     <div className="App">
       <Navbar />
       <Routes>
@@ -66,6 +68,7 @@ function App() {
      {/* <Login /> */}
      {/* <ItemList /> */}
     </div>
+    </AuthContextProvider>
   );
 }
 

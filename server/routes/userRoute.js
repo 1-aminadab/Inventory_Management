@@ -116,16 +116,9 @@ router.get('/all_users',async(req, res)=>{
         if(error) throw error;
         res.status(200).json({success: true, userData: result})
     })
-    // db.end((error)=>{
-    //     if(error){
-    //         console.log('Error colosing MYSQL connection ' + error.stack);
-    //         return 
-    //     }
-    //     console.log('Close MySQL connection');
-        
-    // })
+    
 } )
-// user login end point
+
 router.post('/update_user', async(req, res)=>{
     const id = req.body.id
     const updatedData = req.body.updatedData
@@ -137,12 +130,7 @@ router.post('/update_user', async(req, res)=>{
         console.log('Row updated: ', results);
     })
     // db.end((error)=>{
-    //     if(error){
-    //         console.error('Error closing MYSQL connection: ' + error.stack);
-    //         return;
-    //     }
-    //     console.log('Closed MySQL connetion'); 
-    // })
+
 })
 router.post('user/login', async(req, res)=>{
     try {
@@ -191,12 +179,86 @@ router.delete('/delete_user/:id',(req, res)=>{
 
 })
 
-// Protected route for admin
-router.get('/admin/protected', isAdmin, (req, res)=>{
 
+
+// /////// login exprement
+router.post('/login', async (req, res) => {
+    console.log(req.body);
+    try {
+      const { userID, password } = req.body;
+  
+      // validation
+      if (!userID || !password) {
+        return res.status(400).json({ errorMessage: "Please enter all required fields" });
+      }
+  
+      // query the database to check if the user exists
+      db.query('SELECT * FROM users WHERE userID = ?', [userID] ,async(error, result, fields)=>{
+        if(error) throw error
+
+        const existingUser = result[0];
+
+        if (!existingUser) {
+          return res.status(401).json({ errorMessage: "Wrong user ID or password" });
+        }
+    
+        // compare the passwords
+        const passwordCorrect = await  bcrypt.compare(password, existingUser.password);
+    
+        if (!passwordCorrect) {
+          return res.status(401).json({ errorMessage: "Wrong user ID or password" });
+        }
+// log user in
+            const token = jwt.sign({ user: existingUser.id }, 'process.env.JWT_SECRET');
+            
+            // send a token in a HTTP only cookie
+            res.cookie("token", token, { httpOnly: true }).send();
+            console.log("Token successfully sent");
+      });
+  
+      
+  
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ errorMessage: "Server error" });
+    }
+  });
+  
+router.get("/logout", async(req,res)=>{
+    res.cookie("token", "", {
+        httpOnly:true,
+        expires: new Date(0)
+    }).send()
 })
-// Protected route for user 
-router.get('/user/protected', isUser, (req, res)=>{
-    res.send('User protected resource')
-})
+
+
+router.get("/loggedIn",(req, res)=>{
+    try {
+        const token  = req.cookies.token
+        // if(userId == undefined){
+        //     res.status(400).json({success: false , msg: "token is undefined"})
+        // }
+        if(!token) return res.json(false)
+        
+        const verified = jwt.verify(token, process.env.JWT_SECRET)
+        req.user = verified.user
+        res.json(true)
+      } catch (error) {
+        console.log(error);
+        res.json(false)
+    }
+    
+}
+
+)
+
+
+
+
+
+
+
+
+
+
 module.exports = router

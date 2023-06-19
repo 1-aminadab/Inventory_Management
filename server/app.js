@@ -8,7 +8,7 @@ const app = express();
 const server = http.createServer(app);
 const db = require('./db')
 const cors = require('cors')
-
+const cookieParser = require("cookie-parser")
 /////////// Cors setup /////////
 app.use(
   cors({
@@ -34,7 +34,7 @@ const userRoute = require('./routes/userRoute')
 module.exports.io = io
 app.use(bodyParser.json())
 // Serve static files from the public directory
-
+app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Listen for Socket.io connections

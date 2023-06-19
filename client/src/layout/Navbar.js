@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import './Navbar.css'
+import { useNavigate } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 function Navbar() {
+  const navigate = useNavigate()
   const [orders, setOrders] = useState(false)
   const image = "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
   return (
@@ -12,25 +14,25 @@ function Navbar() {
       <div>
       <ul>
         
-        <li>Home</li>
-        <li>Transfer</li>
+        <li onClick={()=>navigate('/')}>Home</li>
+        <li onClick={()=>navigate('')}>Transfer</li>
         <li className='order' onClick={()=>setOrders(!orders)}>Order  <ArrowDropDownIcon />
         {
           orders &&
         
          <div className='order-list'>
           <ul>
-            <li>Requested</li>
-            <li>Aproved</li>
-            <li>Rejected</li>
-            <li>Taken</li>
-            <li>Returned</li>
+            <l onClick={()=>navigate('')}i>Requested</l>
+            <li onClick={()=>navigate('')}>Aproved</li>
+            <li onClick={()=>navigate('')}>Rejected</li>
+            <li onClick={()=>navigate('')}>Taken</li>
+            <li onClick={()=>navigate('')}>Returned</li>
           </ul>
          </div>
         }
         </li>
-        <li>checkPID</li>
-        <li>History</li>
+        <li onClick={()=>navigate('/uid_check')}>checkPID</li>
+        <li onClick={()=>navigate('')}>History</li>
         
       </ul>
       </div>
