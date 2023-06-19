@@ -14,8 +14,7 @@ function Login() {
     <input type="password" name="password" id="password" />
 
   </div>
-  <a href="#" class="forgot-password">Forgot Password</a>
-  <button type="submit">Submit</button>
+  <button type="submit">Login</button>
 </form>
     </div>
   )

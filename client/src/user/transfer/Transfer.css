@@ -1,16 +1,28 @@
 /* App.css */
+.super-container{
+  display: flex;
+  background-color: #c4d4ff;
 
+}
+.transfer-to{
+  background-color: #c4d4ff;
+  height: 100%;
+  width: 100%;
+}
 .container {
     display: flex;
     flex-direction: column;
+    width: 100%;
     height: 100vh;
+    background-color: #c4d4ff;
   }
   
   .employee-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    width: 500px;
+    width: 100%;
+    overflow: scroll;
   }
   
   .employee-list li {
@@ -18,13 +30,21 @@
     flex-direction: row; /* Change flex direction to display checkboxes on the left */
     align-items: center;
     gap: 20px;
+    width: 100%;
+    background-color: rgb(172, 197, 197);
     justify-content: space-between;
     padding: 10px;
     border-bottom: 1px solid #ccc;
     cursor: pointer;
-    color: #1E3A8A;
-  }
+    color: black;
   
+  }
+  .employee-list li label{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
   .employee-list li.selected {
     background-color: #1E3A8A;
     color: #fff;
@@ -40,4 +60,37 @@
   .employee-list li span {
     flex: 1;
     text-align: center;
+    
+  }
+
+  .transfered-id{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 5px;
+
+  }
+  .transfered-id button{
+    padding: 10px;
+    background-color: #6C9494;
+    padding:10px 30px;
+
+  }
+  .transfer-to > .buttons > button{
+   background-color: #757575;
+   padding:10px 30px;
+  }
+  /* .transfer-to > .buttons > button:hover{
+    background-color: #489191;
+  } */
+
+  .employe-list-column{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    background-color: #798a8a;
+  }
+  .employe-list-column > li{
+    background: none;
+
   }

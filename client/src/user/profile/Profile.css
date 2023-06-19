@@ -1,0 +1,97 @@
+.user-profile {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .user-profile-left {
+    display: flex;
+    flex-direction: column;
+  }
+  .profile-right button{
+    color: rgb(255, 255, 255);
+    background-color: #6C9494;
+  }
+  .user-profile-image {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  
+  .user-profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .profile-left{
+    padding: 10px;
+  }
+  .profile-left .profile-picture img{
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .user-profile-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .user-profile-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .user-profile-right {
+    flex: 1;
+    margin-left: 20px;
+  }
+  
+  .user-profile-nav {
+    display: flex;
+    margin-bottom: 20px;
+  }
+  
+  .user-profile-nav button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #eee;
+    color: #333;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .user-profile-nav button.active {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ccc;
+  }
+  
+  th {
+    background-color: #eee;
+    font-weight: bold;
+  }

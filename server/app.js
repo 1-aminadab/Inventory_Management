@@ -1,94 +1,133 @@
-const { createServer } = require('http');
-const createError = require('http-errors');
 const express = require('express');
+const session = require('express-session')
+const http = require('http');
+const socketIO = require('socket.io');
 const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const socketIo = require('socket.io');
-const cors = require('cors');
-require('dotenv').config();
-
-// Routers
-const indexRouter = require('./routes/index');
-const userRouter = require('./routes/userRoute');
-const itemRouter = require('./routes/itemRoute');
-const orderRouter = require('./routes/orderRoute');
-const uidRouter = require('./routes/uidRoute');
-const authRouter = require('./routes/authRouter');
-
+const bodyParser = require('body-parser')
 const app = express();
+const server = http.createServer(app);
+const db = require('./db')
+const cors = require('cors')
 
-// Set CORS headers
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000/');
-  res.header('Access-Control-Allow-Methods', 'GET,DELETE, PUT, POST');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
+/////////// Cors setup /////////
+app.use(
+  cors({
+    origin:['http://localhost:3000'],
+    credentials: true
+  })
+)
+// //////// ROUTER EXPORTS 
+const authRoute = require('./routes/authRoute')
+const historyRoute = require('./routes/historyRoute')
+const itemRoute = require('./routes/itemRoute')
+const orderRoute = require('./routes/orderRoute')
+const transferRoute = require('./routes/transferRoute')
+const uidRoute = require('./routes/uidRoute')
+const userRoute = require('./routes/userRoute')
+
+//////////
+ const io = socketIO(server,{
+  cors:{
+    origin: ['http://localhost:3000']
+  }
 });
+module.exports.io = io
+app.use(bodyParser.json())
+// Serve static files from the public directory
 
-app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST'],
-  credentials: true // enable cookies
-}));
-
-// View engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const server = app.listen(5000, ()=>{
-  console.log("the server is runnin in port 5000");
-})
+// Listen for Socket.io connections
+io.on('connection', (socket) => {
+  console.log("user connected");
+  // Listen for a 'message' event from the client
+  // socket.on('compare', (data) => {
+  //   console.log('Message received from client:', data);
+  // });
 
-const io = socketIo(server)
-
-io.on('connection', (socket)=>{
-  console.log("new Connection");
-})
-io.origins('http://localhost:3000')
-
-//const io = socketIo(server);
-
-// Middleware to make the io object available to routes
-// app.use((req, res, next) => {
-//   req.io = io;
-//   next();
-// });
-
-
-
-// Routes middleware
-app.use('/', indexRouter);
-app.use('/user', userRouter);
-app.use('/item', itemRouter);
-app.use('/order', orderRouter);
-app.use('/rfid', uidRouter);
-app.use('/auth', authRouter);
-
-// Catch 404 and forward to error handler
-app.use((req, res, next) => {
-  next(createError(404));
+  // Listen for the disconnection of a client
+  socket.on('disconnect', () => {
+    console.log('A client disconnected');
+  });
 });
 
-const port = process.env.APP_PORT || 5000;
+app.use(session({
+  secret: 'my-secret-key',
+  resave: false,
+  saveUninitialized: true
+}))
 
-// Listen on port
+app.post('/check_user', async(req, res)=>{
+  const macAddress = 'C8:F0:9E:F7:9F:04'
+  const {uid, mac_address,place} = req.body
+  if(macAddress !== mac_address){  
+  }
+  db.query('SELECT * FROM users WHERE userUID = ?',uid,(error, result, fields)=>{
+    if(error) throw error;
 
+    if(result.length >0){
+    res.status(200).json({message:"Scan Your Items"})
+     io.emit('user_data', {registered:true, userData:result[0], place:place})
 
-// Error handler
-app.use((err, req, res, next) => {
-  // Set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  // Render the error page
-  res.status(err.status || 500);
-  res.render('error');
+     db.query('INSERT INTO checkMac SET ? ', {mac:mac_address, userID:uid}, (error, result, fields)=>{
+      if(error) throw error;
+      console.log("Row inserted successfully");
+     })
+    }else{
+      res.status(200).json({ message:"user id not registered"})
+      io.emit('user_data', {registered:false, userData:null,place:place, userUID:uid})
+    }
+  })
+})
+
+app.post('/', async(req, res)=>{
+  console.log("it is in");
+  const macAddress = 'C8:F0:9E:F7:9F:04'
+  const {uid, mac_address,place} = req.body
+  if(macAddress !== mac_address){
+    
+  }
+  db.query('SELECT * FROM items WHERE itemID = ?', [uid], (error, result)=>{
+    if(error) throw error;
+    const itemData = result[0]
+    if(result.length > 0){
+      db.query("SELECT * FROM checkMac WHERE mac = ?", [mac_address], (error, result, fields)=>{
+        if(error) throw error
+        if(result.length > 0){
+          db.query('SELECT * FROM orders WHERE productID=? AND userID = ?',[uid,'123'], (error, result)=>{
+           if(error) throw error;
+           if(result.length>0){
+            io.emit('message', {success:true, itemData:itemData, authorised:true})
+            res.status(200).json({condition:"authorised", message:"item Approved for User"})
+           }else{
+            io.emit('message', {success:false, itemData:itemData, authorised:false})
+            res.status(200).json({condition:"unauthorised", message:"user is theft"})
+           }
+          })
+        }else{
+           res.status(200).json({message:"Pleace Scan user card First"})
+        }
+       })
+    }else{
+      res.status(200).json({message:"item not registerd"})
+      io.emit('message', {success:false, itemData:null})
+    }
+    
+  })
+   
+})
+// Start the server
+server.listen(5000, () => {
+  console.log('Server started on port 5000');
 });
+app.use('/user',userRoute)
+app.use('/auth',authRoute)
+app.use('/history',historyRoute)
+app.use('/item',itemRoute)
+app.use('/order',orderRoute)
+app.use('/transfer',transferRoute)
+app.use('/uid',uidRoute)
 
-module.exports = app;
+//////// for file upload
+app.use('/uploads', express.static('uploads'));
+

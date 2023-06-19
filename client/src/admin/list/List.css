@@ -58,3 +58,16 @@ button.update:hover {
 button.delete:hover {
   background-color: #f3077d; /* Pink */
 }
+
+.filter-item-user{
+  display: flex;
+  align-items: center;
+  
+}
+.filter-item-user label{
+  width: 60px;
+}
+.filter-item-user select{
+  width: 100px;
+  cursor: pointer;
+}

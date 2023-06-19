@@ -1,83 +1,102 @@
 const router = require("express").Router()
 const db = require("../db")
 const bcrypt = require('bcrypt')
-// Cruds for users
-router.get('/all_users',async(req, res)=>{
-    db.query('SELECT * FROM users',(error, results, fields)=>{
-        if(error) throw error;
-        console.log(results);
-    })
-    
-    db.end((error)=>{
-        if(error){
-            console.log('Error colosing MYSQL connection ' + error.stack);
-            return 
+const jwt = require('jsonwebtoken')
+////// MULTER SETUP OF USER PROFILE
+////////////////////////////////
+
+const jwtSecret = 'mysecretkey'
+
+// Midleware to chec admin role
+const isAdmin = (req, res, next) => {
+    const token = req.headers.authorization.split(' ')[1];
+    try {
+        const decode = jwt.verify(token, jwtSecret);
+        if(decode.role !== 'admin') {
+            return res.status(403).send('Access denied')
         }
-        console.log('Close MySQL connection');
+        next()
+    } catch (error) {
+        console.error(error)
+        res.status(401).send('Invalid token')
+    }
+};
+
+// Midelware to check user role
+const isUser = (req, res, next) =>{
+    const token = req.header.authorization.split(' ')[1];
+    try {
+        const decode = req.verify(token, jwtSecret)
+        if(decode.role !== 'user') {
+            return res.status(403).send('Access denied')
+        }
+        next()
+    } catch (error) {
+        console.error(error)
+        res.status(401).send("Invalid token")
+    }
+}
+
+// User registration endpoint
+router.post('/register', async(req, res)=>{
+    console.log("hellwo");
+    console.log(req.body);
+    // try {
+    //     const {password} = req.body;
+    //     const hashedPassword = await bcrypt.hash(password, 10)
+    //     const userData = {...req.body, password:hashedPassword}
+    //     console.log(userData);
+    //     const query = 'INSERT INTO users SET ?'
+    //     db.query(query, userData, (error, result, field)=>{
+            
+    //         if (error) {
+    //             console.log(error);
+    //             res.status(500).send('Server error')
+    //         }else{
+    //             console.log("User created");
+    //             res.status(201).send("User create")
+    //         }
+    //     })
+    // } catch (error) {
+    //     console.log(error);
+    //     res.status(500).send("Server error")
+    // }
+})
+
+// user login end point
+router.post('user/login', async(req, res)=>{
+    try {
+        const {userID, password} = req.body;
+        const query = 'SELECT * FROM users WHERE email = ?';
+        db.query(query, [userID], async(error, results)=>{
+            if(error) {
+                console.error(error);
+                res.status(500).send("Server error")
+            } else if (results.length === 0) {
+                res.status(401).send("Invalid credentials")
+            }
+            else{
+                const user = results[0]
+                const isMatch = await bcrypt.compare(password, user.password)
+                if(!isMatch || user.role !== 'admin') {
+                    res.status(401).send('Invalid credential');
+                }else {
+                    const token = jwt.sign({id: user.id, role:user.role},jwtSecret);
+                    res.send({token})
+                }
+            }
+        })
+    } catch (error) {
         
-    })
-} )
-
-router.post('/add_new_user',async(req, res)=>{
-    const saltRounds = 10
-    const oldPassword = `${req.body.fullName}`
-    let newPassword = null
-    bcrypt.genSalt(saltRounds, function(err, salt) {
-        bcrypt.hash(oldPassword.toUpperCase(), salt, function(err, hash) {
-           newPassword = hash
-           
-        });
-    });
-    
-    const userData = {...req.body, password:oldPassword}
-    console.log(newPassword);
-    // console.log(userData)
-    // db.query('INSERT INTO users SET ?', userData,(error, results, fields)=>{
-    //     if(error) throw error;
-    //     console.log('result :', results)
-    //     console.log('fields: ', fields);
-    //     console.log('NEW RECORD ADDED TO ATHE TABLE WITH: ');
-    // })
-    // db.end((error)=>{
-    //     if(error){
-    //         console.log("Error closing MYsql connection : "+error.stack);
-    //         return 
-    //     }
-    //     console.log('Closed MySQL connection')
-    // })
-})
-
-router.patch('/update_user', async(req, res)=>{
-    const rowIdToUpdate = req.body.id
-    const updatedData = req.body.updatedData
-    db.query('UPDATE users SET ? WHERE userID = ?',[updatedData, rowIdToUpdate], (error, results, fields)=>{
-        if(error) throw error;
-        console.log('Row updated: ', results);
-    })
-    db.end((error)=>{
-        if(error){
-            console.error('Error closing MYSQL connection: ' + error.stack);
-            return;
-        }
-        console.log('Closed MySQL connetion'); 
-    })
-})
-
-router.delete('/delete_user',(req, res)=>{
-    const rowIdToDelete = req.body.id
-    db.query('DELETE FROM users WHERE userID = ?', rowIdToDelete, (error, results, fields)=>{
-        if(error) throw error;
-        console.log('Row delete: ', results.affectedRows);
-    })
-
-    db.end((error)=>{
-        if(error){
-            condole.error("Error closing MySQL connection: " + error.stack)
-            return;
-        }
-        console.log('Closing MySQL connection Successfull ')
-    })
+    }
 
 })
+// Protected route for admin
+router.get('/admin/protected', isAdmin, (req, res)=>{
 
+})
+// Protected route for user 
+router.get('/user/protected', isUser, (req, res)=>{
+    res.send('User protected resource')
+})
 module.exports = router

@@ -6,7 +6,7 @@
   }
   
   form {
-    background-color: #fff;
+    background-color: var(--white-color);
     border-radius: 10px;
     padding: 40px;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
@@ -38,7 +38,7 @@
   }
   
   input:focus {
-    border-bottom-color: #3b9eff;
+    border-bottom-color: var(--primary-color);
     outline: none;
   }
   
@@ -52,7 +52,7 @@
   }
   
   button[type="submit"] {
-    background-color: #3b9eff;
+    background-color: var(--primary-color);
     border: none;
     border-radius: 5px;
     color: #fff;

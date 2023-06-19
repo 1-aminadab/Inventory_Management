@@ -1,12 +1,34 @@
 :root{
-  --primary-color:blue;
-  --secodary-color:rgba(7, 7, 252, 0.61);
+  --primary-color:#6C9494;
+  --secodary-color:#7197976c;
+  --white-color: white;
 }
 .App {
   box-sizing: border-box;
   text-align: center;
   color: black;
-  overflow: hidden;
+ 
+}
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  border-radius: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 

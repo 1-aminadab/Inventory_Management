@@ -9,7 +9,7 @@ function OrderHistory({open, change}) {
   
   
   useEffect(()=>{
-    setOpenHistory(open)
+    setOpenHistory(true)
   },[open])
   return (
     <div style={{transform:`translateX(${ openHistory ? "0%" : '100%'})`}} className='order-history'>
