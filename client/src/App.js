@@ -41,8 +41,8 @@ function App() {
         <Route path='/add_user' element={<AddUser/>}/>
         <Route path='/add_item' element={<AddItem/>}/>
        {/*                      */}
-       <Route path='/update_item' element={<UpdateItem/>}/>
-       <Route path='/update_user' element={<UpdateUser/>}/>
+       <Route path='/update_item/:id' element={<UpdateItem/>}/>
+       <Route path='/update_user/:id' element={<UpdateUser/>}/>
        {/*                       */}
         <Route path='/login' element={<Login/>}/>
         <Route path='/item_detail' element={<ItemDetail/>}/>

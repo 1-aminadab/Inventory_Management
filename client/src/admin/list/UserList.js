@@ -1,10 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './List.css';
 import SearchIcon from '@mui/icons-material/Search';
-
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 function UserList() {
+  const navigate = useNavigate()
   const [filter, setFilter] = useState('');
   const [filterBy, setFilterBy] = useState('name');
+  const [users, setUsers] = useState()
+  useEffect(() => {
+    axios
+      .get('http://localhost:5000/user/all_users')
+      .then((response) => {
+       setUsers(response.data.userData)
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
@@ -14,13 +29,22 @@ function UserList() {
     setFilterBy(event.target.value);
   };
 
-  const filterItems = (item) => {
+  const filterUsers = (user) => {
     if (filterBy === 'id') {
-      return item.userId.toString().includes(filter);
+      return user.userID.toString().includes(filter);
     } else {
-      return item.name.toLowerCase().includes(filter.toLowerCase());
+      return user.fullName.toLowerCase().includes(filter.toLowerCase());
     }
   };
+  const deleteUser = async(userId)=>{
+    await axios.delete(`http://localhost:5000/user/delete_user/${userId}`)
+    .then((res)=>{
+      console.log(res.data.itemData);
+    })
+    .catch((error)=>{
+      console.log(error);
+    })
+  }
 
   return (
     <div>
@@ -44,27 +68,30 @@ function UserList() {
             <th>Email</th>
             <th>Phone</th>
             <th>Department</th>
-            <th>City</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {items
-            .filter(filterItems)
-            .map((item) => (
-              <tr key={item.id}>
-                <td>{item.id}</td>
-                <td>{item.userId}</td>
-                <td>{item.name}</td>
-                <td>{item.email}</td>
-                <td>{item.phone}</td>
-                <td>{item.address}</td>
-                <td>{item.city}</td>
+          {users && users
+            .filter(filterUsers)
+            .map((user) => (
+              <tr key={user.id}>
+                <td>{user.id}</td>
+                <td>{user.userID}</td>
+                <td>{user.fullName}</td>
+                <td>{user.email}</td>
+                <td>{user.phoneNumber}</td>
+                <td>{user.department}</td>
+               
                 
                 <td>
                   <button className='view'>View</button>
-                  <button className='update'>Update</button>
-                  <button className='delete'>Delete</button>
+                  <button className='update' onClick={()=>navigate(`/update_user/${user.userID}`)}>Update</button>
+                  <button className='delete' onClick={()=>{
+                    if(confirm('Delete Selected user?')){
+                      deleteUser(user.userID)
+                    }
+                  }}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -74,27 +101,5 @@ function UserList() {
   );
 }
 
-const items = [
-  {
-    id: 1,
-    userId:"ets0116/11",
-    name: 'Abrham Zewdu',
-    email: 'abrhamzedu0987@example.com',
-    phone: '555-1234',
-    address: 'block 10 street',
-    city: 'Addis Ababa',
-   department: 'Electrical',
-  },
-  {
-    id: 2,
-    userId:"ets0069/11",
-    name: 'Hailemichael Tsega',
-    email: 'hailemichael@example.com',
-    phone: '456-765',
-    address: 'block 10 street',
-    city: 'Addis Ababa',
-   department: 'Electrical',
-  },
-];
 
 export default UserList;

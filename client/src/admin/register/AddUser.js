@@ -9,7 +9,8 @@ const AddUser = () => {
   const [userUID, setUserUID] = useState('')
   const [formData, setFormData] = useState({
     userUID:'',
-    firstName: userUID,
+    userID:"",
+    firstName: '',
     lastName: '',
     phoneNumber: '',
     email: '',
@@ -19,13 +20,22 @@ const AddUser = () => {
     image: null,
   });
 useEffect(()=>{
-  socket.on('user_data', (data)=>{
+  socket.on('user_data', (data)=>{data.userUID
+    if(!data.userUID){
+      setFormData({
+        ...formData,
+        userUID:"",
+      });
+      return
+    }
+    console.log(data);
     setFormData({
       ...formData,
       userUID:data.userUID,
     });
   })
 },[])
+
 console.log(formData);
 console.log(userUID);
   const handleInputChange = (event) => {
@@ -46,25 +56,28 @@ console.log(userUID);
   const handleSubmit = async (event) => {
     // console.log(formData);
     event.preventDefault();
+
     const data = new FormData();
+    data.append('userProfile',formData.image)
 
-    // data.append('firstName', formData.firstName);
-    // data.append('lastName', formData.lastName);
-    // data.append('phoneNumber', formData.phoneNumber);
-    // data.append('email', formData.email);
-    // data.append('department', formData.department);
-    // data.append('place', formData.place);
-
-    data.append('image', formData.image);
+    
  
     try {
-     await axios.post('http://localhost:5000/user/register',formData)
+      await axios.post('http://localhost:5000/user/uploadProfileImage', data)
+    .then((res)=>{
+      console.log(res);
+       axios.post('http://localhost:5000/user/register',{...formData,image:res.data.filePath})
       .then((res)=>console.log(res))
       .catch((error)=> console.log(error))
+    })
+    .catch((error)=>console.log(error))
+    console.log(formData.image);
+
+     
       
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
-      console.log(error.response.data);
+      // console.log(error.response.data);
     }
   };
 
@@ -78,6 +91,14 @@ console.log(userUID);
           id="user_id"
           name="userUID"
           value={formData.userUID}
+          onChange={handleInputChange}
+        />
+           <label htmlFor="user_id">user id:</label>
+        <input
+          type="text"
+          id="user_id"
+          name="userID"
+          value={formData.userID}
           onChange={handleInputChange}
         />
 
